@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arunika Residence Finance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: forest header band → filter bar → KPI strip → sales | payment mix → cash flow | receivables → budget | S-curve → site plan. Deliberately single light theme (Ivory & Forest). */
+:root{
+  color-scheme:light;
+  --bg:#f6f3ec;--surface:#fffdf8;--surface-2:#f3eee4;--line:#e6dfd2;--grid:#eee8dc;--track:#efe9de;
+  --text:#1f2a24;--text-2:#56605a;--muted:#858b84;
+  --c1:#a4473a;--c2:#2f5d4e;--c3:#b8893a;--c4:#6d5a82;--c2l:#a3c4b6;--bad:#b3261e;--good:#2f7d4f;
+  --s-av:#efe9de;--s-av-line:#d8cfbf;--s-bk:#d9ad5c;--s-sold:#2f5d4e;--s-ho:#6d5a82;
+  --a1:#e3c58a;--a2:#d49a4c;--a3:#b5563f;--a4:#7e2a22;
+  --hdr-a:#1b352d;--hdr-b:#2f5d4e;--co:#e2c27f;--hdr-text:#fbf7ee;--hdr-sub:#c9d8cf;
+  --tip:#1f2a24;--tip-text:#fbf7ee;--tip-sub:#c9d8cf;
+  --f:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--f);font-size:14px;margin:0}
+.wrap{max-width:1440px;margin:0 auto;padding-inline:clamp(16px,2.4vw,32px);padding-block:22px 34px;display:flex;flex-direction:column;gap:14px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:linear-gradient(120deg,var(--hdr-a),var(--hdr-b));border-radius:16px;padding:18px 22px}
+.brand{display:flex;gap:16px;align-items:center;min-width:0}
+.brand svg{flex:none}
+.co{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--co);font-weight:800}
+h1{color:var(--hdr-text);font-size:clamp(18px,2.1vw,22px);font-weight:800;letter-spacing:-.3px;margin:2px 0 0;text-wrap:balance}
+.sub{color:var(--hdr-sub);font-size:13px;margin-top:2px}
+.tag{font-size:11px;color:var(--hdr-sub);border:1px solid rgba(255,255,255,.3);padding:4px 10px;border-radius:99px;white-space:nowrap}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px 14px}
+.lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:700}
+.seg{display:flex;flex-wrap:wrap;background:var(--surface-2);border-radius:10px;padding:3px}
+.seg button{font:600 12.5px var(--f);padding:7px 11px;border-radius:8px;color:var(--text-2);background:none;border:0;cursor:pointer}
+.seg button:hover{color:var(--text)}
+.seg button[aria-pressed="true"]{background:var(--c1);color:#fff}
+.sel{display:flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:0 4px 0 12px}
+.sel span{font-size:13px;color:var(--text-2)}
+.sel select{font:600 13px var(--f);color:var(--text);background:transparent;border:0;padding:8px 4px;cursor:pointer}
+.sel.on{border-color:var(--c2);box-shadow:0 0 0 1px var(--c2) inset}
+.spacer{flex:1}
+.reset{font:500 13px var(--f);color:var(--text-2);padding:8px 12px;border-radius:10px;border:1px dashed var(--s-av-line);background:none;cursor:pointer}
+.reset:hover{color:var(--text);border-color:var(--text-2)}
+button:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--c2);outline-offset:2px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--k);border-radius:14px;padding:13px 16px}
+.kpi .t{font-size:12px;color:var(--text-2);font-weight:600}
+.kpi .v{font-size:clamp(20px,1.9vw,23px);font-weight:800;margin:5px 0 4px;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:11.5px;color:var(--text-2)}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.g2e{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}
+@media (max-width:1080px){.g2,.g2e{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){.spacer{display:none}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:17px 18px 15px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.ch{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.ch h2{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;margin:0}
+.ch h2 i{width:10px;height:10px;border-radius:3px;background:var(--c)}
+.ch small{font-size:12px;color:var(--muted)}
+.chart{width:100%;position:relative}
+.chart svg{display:block;width:100%;overflow:visible}
+.insight{margin-top:auto;background:color-mix(in srgb,var(--c) 8%,var(--surface));border-left:3px solid var(--c);border-radius:8px;padding:10px 13px;font-size:13px;line-height:1.6;color:var(--text-2)}
+.insight strong{color:var(--c);display:block;font-size:11px;letter-spacing:.7px;text-transform:uppercase;margin-bottom:3px}
+.insight b{color:var(--text)}
+.insight p{margin:0;max-width:80ch}
+.legend{display:flex;gap:14px;font-size:11.5px;color:var(--text-2);flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.note{font-size:11.5px;color:var(--muted)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;padding:5px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:6px 4px;border-bottom:1px solid var(--grid);color:var(--text);white-space:nowrap}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+tbody tr{cursor:pointer}tbody tr:hover td{background:var(--surface-2)}
+tbody tr.sel td{background:color-mix(in srgb,var(--c3) 16%,var(--surface))}
+.pill{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:99px;background:color-mix(in srgb,var(--bad) 14%,var(--surface));color:var(--bad)}
+.pill.w{background:color-mix(in srgb,var(--c3) 20%,var(--surface));color:#8a6320}
+.den{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:22px;align-items:start}
+@media (max-width:1080px){.den{grid-template-columns:minmax(0,1fr)}}
+.denscroll{overflow-x:auto}
+.side{display:flex;flex-direction:column;gap:12px}
+.dleg{display:flex;flex-direction:column;gap:7px;font-size:12.5px}
+.dleg span{display:flex;align-items:center;gap:8px;color:var(--text-2)}
+.dleg b{margin-left:auto;color:var(--text)}
+.dleg i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.detail{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface-2);font-size:12.5px;display:flex;flex-direction:column;gap:5px}
+.detail h3{margin:0;font-size:14px;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.detail .row{display:flex;justify-content:space-between;gap:10px;color:var(--text-2)}
+.detail .row b{color:var(--text);font-variant-numeric:tabular-nums;text-align:right}
+.detail button{align-self:flex-start;font:600 12px var(--f);color:var(--c2);background:none;border:0;padding:2px 0;cursor:pointer}
+.chip{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:99px;color:#fff}
+.hit{cursor:pointer}
+.fade{transition:opacity .2s}
+@media (prefers-reduced-motion:reduce){.fade{transition:none}}
+.foot{color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#tip{position:fixed;pointer-events:none;z-index:10;background:var(--tip);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--tip-sub);box-shadow:0 8px 24px rgba(20,30,25,.25);max-width:260px;line-height:1.45}
+#tip b{display:block;color:var(--tip-text);font-size:14px;font-weight:800;margin-top:1px}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <svg width="54" height="54" viewBox="0 0 64 64" role="img" aria-label="Logo PT Arunika Bumi Properti">
+        <rect width="64" height="64" rx="16" fill="#fbf7ee"/>
+        <circle cx="32" cy="40" r="11" fill="#c9993f"/>
+        <rect x="10" y="40" width="44" height="14" fill="#fbf7ee"/>
+        <g stroke="#c9993f" stroke-width="2.4" stroke-linecap="round"><path d="M32 22v-5M19.5 27.5l-3.5-3.5M44.5 27.5l3.5-3.5M14 38h-4M50 38h4"/></g>
+        <path d="M12 44 32 30l20 14" fill="none" stroke="#a4473a" stroke-width="4.2" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M17 47h30" stroke="#2f5d4e" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+      <div><div class="co">PT Arunika Bumi Properti</div><h1>Dashboard Keuangan · Arunika Residence</h1>
+      <div class="sub" id="sub">Memuat data…</div></div>
+    </div>
+    <span class="tag" id="tag">Data contoh (fiktif)</span>
+  </header>
+
+  <div class="filters" role="group" aria-label="Filter dashboard">
+    <span class="lbl">Bulan</span>
+    <div class="seg" id="months"></div>
+    <label class="sel" id="w-cl"><span>Cluster</span><select id="f-cl"></select></label>
+    <label class="sel" id="w-cb"><span>Cara Bayar</span><select id="f-cb"></select></label>
+    <div class="spacer"></div>
+    <button class="reset" id="reset">↺ Reset filter</button>
+  </div>
+
+  <section class="kpis" id="kpis" aria-label="Ringkasan KPI"></section>
+
+  <div class="grid g2">
+    <section class="card" style="--c:var(--c1)">
+      <div class="ch"><h2><i></i>Marketing Sales vs Target</h2><small id="s-sales">per bulan</small></div>
+      <div class="chart" id="sales"></div>
+      <div class="insight"><strong>Analisa</strong><p id="a-sales"></p></div>
+    </section>
+    <section class="card" style="--c:var(--c4)">
+      <div class="ch"><h2><i></i>Cara Bayar & Penyerapan Cluster</h2><small class="per"></small></div>
+      <div class="chart" id="mix"></div>
+      <div class="insight"><strong>Analisa</strong><p id="a-mix"></p></div>
+    </section>
+  </div>
+
+  <div class="grid g2">
+    <section class="card" style="--c:var(--c2)">
+      <div class="ch"><h2><i></i>Arus Kas Masuk vs Keluar</h2><small>tingkat perusahaan · per bulan</small></div>
+      <div class="legend"><span><i style="background:var(--c2)"></i>Kas masuk konsumen</span><span><i style="background:var(--c2l)"></i>Kredit konstruksi</span><span><i style="background:var(--c1)"></i>Kas keluar</span><span><i style="background:var(--c3);height:3px"></i>Saldo kas akhir bulan</span></div>
+      <div class="chart" id="cash"></div>
+      <div class="insight"><strong>Analisa</strong><p id="a-cash"></p></div>
+    </section>
+    <section class="card" style="--c:var(--bad)">
+      <div class="ch"><h2><i></i>Aging Piutang Jatuh Tempo</h2><small id="s-aging"></small></div>
+      <div class="chart" id="aging"></div>
+      <div class="tbl"><table><thead><tr><th>Konsumen</th><th>Unit</th><th>Tagihan</th><th class="r">Nilai</th><th class="r">Telat</th></tr></thead><tbody id="top"></tbody></table></div>
+      <div class="insight"><strong>Analisa</strong><p id="a-aging"></p></div>
+    </section>
+  </div>
+
+  <div class="grid g2e">
+    <section class="card" style="--c:var(--c2)">
+      <div class="ch"><h2><i></i>Budget vs Realisasi Biaya Proyek</h2><small id="s-budget"></small></div>
+      <div class="legend"><span><i style="background:var(--track);border:1px solid var(--line)"></i>RAB</span><span><i style="background:var(--c2)"></i>Biaya terserap</span><span><i style="background:var(--c4);width:3px;height:14px;border-radius:1px"></i>Progress fisik</span></div>
+      <div class="chart" id="budget"></div>
+      <div class="insight"><strong>Analisa</strong><p id="a-budget"></p></div>
+    </section>
+    <section class="card" style="--c:var(--c1)">
+      <div class="ch"><h2><i></i>Kurva-S Biaya Konstruksi</h2><small>kumulatif, Rp miliar</small></div>
+      <div class="legend"><span><i style="background:var(--muted);height:3px"></i>Rencana</span><span><i style="background:var(--c1);height:3px"></i>Realisasi</span></div>
+      <div class="chart" id="ks"></div>
+      <div class="insight"><strong>Analisa</strong><p id="a-ks"></p></div>
+    </section>
+  </div>
+
+  <section class="card" style="--c:var(--c3)">
+    <div class="ch"><h2><i></i>Denah Status Unit · Arunika Residence</h2><small id="s-den">klik unit untuk detail konsumen & tagihan</small></div>
+    <div class="den">
+      <div class="denscroll"><div id="denah"></div></div>
+      <div class="side">
+        <div class="dleg" id="dleg"></div>
+        <div id="detail"></div>
+        <div class="insight"><strong>Analisa</strong><p id="a-den"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot"><span>Klik bulan, bar, irisan, cluster, baris tunggakan, atau unit di denah untuk memfilter. Semua chart dan analisa ikut berubah.</span><span id="src">Sumber: data contoh</span></footer>
+</div>
+<div id="tip" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ================= helpers =================
+const $=id=>document.getElementById(id),NS="http://www.w3.org/2000/svg";
+const V=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NAMA=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"],N3=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+const nf=(v,d=1)=>Number(v).toLocaleString("id-ID",{minimumFractionDigits:d,maximumFractionDigits:d});
+const M=(v,d=2)=>"Rp"+nf(v/1e9,d)+" M",JT=v=>"Rp"+nf(v/1e6,0)+" jt";
+function rp(v){const a=Math.abs(v);return a>=1e9?M(v):a>=1e6?JT(v):"Rp"+nf(v,0)}
+const pc=(v,d=0)=>nf(v*100,d)+"%";
+const day=t=>Math.floor(t/864e5);
+const dstr=d=>{const x=new Date(d*864e5);return`${x.getUTCDate()} ${N3[x.getUTCMonth()]} ${x.getUTCFullYear()}`};
+function parseDate(v){
+  if(v===null||v===undefined||v==="")return null;
+  if(v instanceof Date&&!isNaN(v)){const t=new Date(v.getTime()+36e5);return day(Date.UTC(t.getFullYear(),t.getMonth(),t.getDate()))}
+  if(typeof v==="number")return day(Date.UTC(1899,11,30))+Math.round(v);
+  const s=String(v).trim();let m;
+  if(m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))return day(Date.UTC(+m[1],m[2]-1,+m[3]));
+  if(m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})/))return day(Date.UTC(+m[3],m[2]-1,+m[1]));
+  return null}
+const num=v=>typeof v==="number"?v:Number(String(v??"").replace(/[^\d.-]/g,""))||0;
+const str=v=>String(v??"").trim();
+const bool=v=>v===true||/^(true|ya|1|y)$/i.test(str(v));
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function tx(p,x,y,s,a){const t=el("text",Object.assign({x,y,fill:V("--text-2"),"font-size":11,"font-family":V("--f")},a),p);t.textContent=s;return t}
+function svgIn(id,H,label,minW=300){const box=$(id);box.innerHTML="";const W=Math.max(minW,box.clientWidth);return[el("svg",{viewBox:`0 0 ${W} ${H}`,height:H,role:"img","aria-label":label},box),W]}
+const tip=$("tip");
+function showTip(e,h){tip.innerHTML=h;tip.hidden=false;const w=tip.offsetWidth,hh=tip.offsetHeight;let x=e.clientX+14,y=e.clientY-hh-10;if(x+w>innerWidth-8)x=e.clientX-w-14;if(y<8)y=e.clientY+16;tip.style.left=x+"px";tip.style.top=y+"px"}
+const hideTip=()=>{tip.hidden=true};
+function act(node,html,fn,label){node.classList.add("hit");node.setAttribute("tabindex","0");node.setAttribute("role","button");node.setAttribute("aria-label",label);
+  node.addEventListener("mousemove",e=>showTip(e,html));node.addEventListener("mouseleave",hideTip);
+  node.addEventListener("click",()=>{hideTip();fn()});node.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();fn()}})}
+const sum=(a,f)=>a.reduce((s,x)=>s+f(x),0);
+
+// ================= model =================
+let UN,SA,TG,CA,BI,KS,TGT,MON,STAT_DAY,PROYEK;
+const S={m:0,cl:null,cb:null,unit:null};
+const CBS=["KPR","Cash Bertahap","Cash Keras"];
+function build(sh){
+  const need={unit:["unit_id","cluster","tipe","harga"],penjualan:["sale_id","unit_id","cluster","harga","konsumen","tgl_booking","cara_bayar"],tagihan:["sale_id","unit_id","jenis","jatuh_tempo","nominal","tgl_bayar","dibayar"],arus_kas:["tanggal","arah","kategori","nominal"],biaya_proyek:["proyek","rab","progress_fisik"],kurva_s:["bulan","rencana_kumulatif","realisasi_kumulatif"]};
+  for(const k in need){if(!sh[k])throw new Error(`Sheet "${k}" tidak ditemukan.`);const miss=need[k].filter(c=>sh[k].length&&!(c in sh[k][0]));if(miss.length)throw new Error(`Sheet "${k}": kolom ${miss.join(", ")} tidak ditemukan.`)}
+  UN=sh.unit.map(r=>{const id=str(r.unit_id),[b,n]=id.split("-");return{id,cl:str(r.cluster),blok:str(r.blok)||b,no:+n||0,tipe:str(r.tipe),harga:num(r.harga)}});
+  SA=sh.penjualan.map(r=>({sid:str(r.sale_id),unit:str(r.unit_id),cl:str(r.cluster),harga:num(r.harga),kon:str(r.konsumen),tb:parseDate(r.tgl_booking),cb:str(r.cara_bayar),bank:str(r.bank_kpr),batal:bool(r.batal),tbatal:parseDate(r.tgl_batal),tst:parseDate(r.tgl_serah_terima)})).filter(s=>s.tb!==null);
+  const sBy=new Map(SA.map(s=>[s.sid,s]));
+  TG=sh.tagihan.map(r=>{const s=sBy.get(str(r.sale_id))||{};return{sid:str(r.sale_id),unit:str(r.unit_id),kon:str(r.konsumen)||s.kon,cl:str(r.cluster)||s.cl,cb:str(r.cara_bayar)||s.cb,jenis:str(r.jenis),due:parseDate(r.jatuh_tempo),nom:num(r.nominal),paid:num(r.dibayar)>0?parseDate(r.tgl_bayar):null,amt:num(r.dibayar)}}).filter(t=>t.due!==null);
+  CA=sh.arus_kas.map(r=>({t:parseDate(r.tanggal),arah:str(r.arah),kat:str(r.kategori),ket:str(r.keterangan),nom:num(r.nominal),proyek:str(r.proyek),saldo:r.saldo===""||r.saldo===undefined?null:num(r.saldo)})).filter(c=>c.t!==null).sort((a,b)=>a.t-b.t);
+  if(CA.some(c=>c.saldo===null)){const first=CA[0];let s=(first.saldo??0)-(first.arah==="Masuk"?first.nom:-first.nom);CA.forEach(c=>{s+=c.arah==="Masuk"?c.nom:-c.nom;c.saldo=s})}
+  BI=sh.biaya_proyek.map(r=>({p:str(r.proyek),pos:str(r.pos_pekerjaan),rab:num(r.rab),prog:num(r.progress_fisik)}));
+  KS=sh.kurva_s.map(r=>({b:str(r.bulan).slice(0,7),plan:num(r.rencana_kumulatif),real:num(r.realisasi_kumulatif)}));
+  TGT=new Map((sh.target||[]).map(r=>[str(r.bulan).slice(0,7),num(r.target_penjualan)]));
+  // months from cash flow range
+  const t0=CA[0].t,t1=CA[CA.length-1].t;MON=[];let d=new Date(t0*864e5);d=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1));
+  while(day(d.getTime())<=t1){const y=d.getUTCFullYear(),m=d.getUTCMonth(),s=day(d.getTime()),e=day(Date.UTC(y,m+1,1))-1;MON.push({y,m,key:`${y}-${String(m+1).padStart(2,"0")}`,name:NAMA[m],n3:N3[m],s,e});d=new Date(Date.UTC(y,m+1,1))}
+  STAT_DAY=MON[MON.length-1].e;
+  PROYEK=[...new Set(BI.map(b=>b.p))];
+}
+// period helpers
+const P=()=>S.m?MON[S.m-1]:null;
+const pStart=()=>S.m?MON[S.m-1].s:MON[0].s, asof=()=>S.m?MON[S.m-1].e:STAT_DAY;
+const inP=t=>t!==null&&t>=pStart()&&t<=asof();
+const mOf=t=>MON.findIndex(m=>t>=m.s&&t<=m.e);
+const fil=(x,skip={})=>(skip.cl||!S.cl||x.cl===S.cl)&&(skip.cb||!S.cb||x.cb===S.cb);
+const netSales=(skip={})=>SA.filter(s=>!s.batal&&fil(s,skip));
+const perLabel=()=>S.m?`${P().name} ${P().y}`:`${MON[0].name}–${MON[MON.length-1].name} ${MON[MON.length-1].y}`;
+const ctx=()=>{const f=[];if(S.cl)f.push("Cluster "+S.cl);if(S.cb)f.push(S.cb);return f.length?` (${f.join(", ")})`:""};
+function overdue(skip={}){const a=asof();return TG.filter(t=>t.due<=a&&(t.paid===null||t.paid>a)&&fil(t,skip)&&activeSale(t.sid,a)).map(t=>({...t,hari:a-t.due}))}
+const saleBy=()=>new Map(SA.map(s=>[s.sid,s]));let SB;
+function activeSale(sid,a){const s=SB.get(sid);return s&&s.tb<=a&&!(s.batal&&s.tbatal!==null&&s.tbatal<=a)&&!(s.batal&&s.tbatal===null)}
+const saldoAt=t=>{let v=null;for(const c of CA){if(c.t>t)break;v=c.saldo}return v??(CA[0].saldo-(CA[0].arah==="Masuk"?CA[0].nom:-CA[0].nom))};
+function unitStatus(a){const map=new Map();for(const s of SA){if(s.tb>a)continue;if(s.batal&&(s.tbatal===null||s.tbatal<=a))continue;
+  const st=s.tst!==null&&s.tst<=a?"Serah Terima":a-s.tb<=30?"Booking":"Terjual";map.set(s.unit,{st,s})}return map}
+
+// ================= KPIs =================
+function renderKPI(){
+  const a=asof(),sales=netSales().filter(s=>inP(s.tb)),sv=sum(sales,s=>s.harga),allV=sum(SA.filter(s=>!s.batal&&inP(s.tb)),s=>s.harga);
+  const tgt=S.m?(TGT.get(P().key)||0):sum(MON,m=>TGT.get(m.key)||0);
+  const cin=sum(TG.filter(t=>t.paid!==null&&inP(t.paid)&&fil(t)),t=>t.amt);
+  const sal=saldoAt(a),od=overdue(),odv=sum(od,t=>t.nom),kpr=od.filter(t=>/KPR/.test(t.jenis)).length;
+  const dueP=TG.filter(t=>t.due>=pStart()&&t.due<=a&&fil(t)&&activeSale(t.sid,a)),coll=sum(dueP,t=>t.nom)?sum(dueP,t=>t.paid!==null&&t.paid<=a?t.amt:0)/sum(dueP,t=>t.nom):0;
+  const lm=MON[MON.length-1],dueL=TG.filter(t=>t.due>=lm.s&&t.due<=lm.e&&fil(t)&&activeSale(t.sid,lm.e)),collL=sum(dueL,t=>t.nom)?sum(dueL,t=>t.paid!==null&&t.paid<=lm.e?t.amt:0)/sum(dueL,t=>t.nom):0;
+  const bud=budgetRows(),bR=S.cl?bud.filter(b=>b.p===S.cl):bud,rab=sum(bR,b=>b.rab),real=sum(bR,b=>b.real);
+  let low=null;if(!S.m){MON.forEach((m,i)=>{const v=saldoAt(m.e);if(!low||v<low.v)low={v,i}})}
+  const K=[
+    ["Marketing Sales",M(sv),`${sales.length} unit · `+(!S.cl&&!S.cb&&tgt?`${pc(sv/tgt,1)} dari target`:`${pc(allV?sv/allV:0)} dari total`),"--c1"],
+    ["Kas Masuk Konsumen",M(cin),"DP, cicilan & pencairan KPR"+ctx(),"--c2"],
+    [`Saldo Kas ${dstr(a).replace(/ \d{4}$/,"")}`,M(sal),S.m?`Awal bulan ${M(saldoAt(P().s-1))}`:`Terendah ${M(low.v)} (${MON[low.i].n3})`,"--c3"],
+    ["Piutang Jatuh Tempo",M(odv),`${od.length} tagihan · ${kpr} KPR tertunda`,"--bad"],
+    ["Collection Rate",pc(coll,1),S.m?`${dueP.length} tagihan jatuh tempo`:`${lm.name} ${pc(collL)}`,"--c4"],
+    ["Biaya Proyek Terserap",pc(rab?real/rab:0),`${M(real,1)} dari RAB ${M(rab,1)}`,"--c2"]];
+  $("kpis").innerHTML=K.map(([t,v,d,c])=>`<div class="kpi" style="--k:var(${c})"><div class="t">${t}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join("");
+}
+
+// ================= Sales =================
+function renderSales(){
+  const H=240,[s,W]=svgIn("sales",H,"Grafik marketing sales per bulan",480),L=46,R=10,T=24,B=40;
+  const rows=MON.map((m,i)=>{const ss=netSales().filter(x=>x.tb>=m.s&&x.tb<=m.e);return{i,m,v:sum(ss,x=>x.harga),n:ss.length,t:TGT.get(m.key)||0}});
+  const showT=!S.cl&&!S.cb,mx=Math.max(...rows.map(r=>r.v),showT?Math.max(...rows.map(r=>r.t)):0,1),step=[1e9,2e9,3e9,5e9,1e10].find(v=>mx/v<=4.5)||2e10,max=Math.ceil(mx*1.08/step)*step;
+  const y=v=>T+(1-v/max)*(H-T-B),bw=(W-L-R)/rows.length;
+  for(let v=0;v<=max+1;v+=step){el("line",{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:V("--grid")},s);tx(s,L-8,y(v)+4,nf(v/1e9,0)+" M",{"text-anchor":"end",fill:V("--muted")})}
+  rows.forEach(r=>{const x=L+r.i*bw+bw*.18,w=bw*.64,sel=S.m===r.i+1,hitT=showT&&r.t&&r.v>=r.t;
+    const g=el("g",{class:"fade"},s);el("rect",{x:L+r.i*bw,y:T,width:bw,height:H-T-B,fill:"transparent"},g);
+    el("rect",{x,y:y(r.v),width:w,height:Math.max(0,y(0)-y(r.v)),rx:4,fill:V("--c1"),"fill-opacity":S.m?(sel?1:.35):(hitT?1:.62)},g);
+    if(r.v)tx(g,x+w/2,y(r.v)-6,nf(r.v/1e9,1),{"text-anchor":"middle",fill:V("--text"),"font-weight":700});
+    tx(g,x+w/2,H-B+16,r.m.n3,{"text-anchor":"middle",fill:V("--text"),"font-weight":sel?800:500});
+    tx(g,x+w/2,H-B+30,r.n+" unit",{"text-anchor":"middle",fill:V("--muted"),"font-size":10});
+    act(g,`${r.m.name} ${r.m.y}<b>${M(r.v)}</b>${r.n} unit${showT&&r.t?` · ${pc(r.v/r.t)} dari target`:""}<br>Klik untuk ${sel?"kembali ke semua bulan":"filter bulan ini"}`,()=>{S.m=sel?0:r.i+1;S.unit=null;render()},`${r.m.name}: ${M(r.v)}`)});
+  if(showT&&rows.some(r=>r.t)){const tv=rows[0].t;el("line",{x1:L,x2:W-R,y1:y(tv),y2:y(tv),stroke:V("--text"),"stroke-dasharray":"5 4","stroke-width":1.3},s);tx(s,L+6,y(tv)-6,"Target "+M(tv,1),{fill:V("--text"),"font-weight":700})}
+  $("s-sales").textContent=showT?"per bulan · garis putus-putus = target":"per bulan"+ctx();
+  // analysis
+  const cancels=SA.filter(x=>x.batal&&fil(x)&&inP(x.tb));let a;
+  if(S.m){const r=rows[S.m-1],prev=S.m>1?rows[S.m-2]:null,byCl={};netSales().filter(x=>inP(x.tb)).forEach(x=>byCl[x.cl]=(byCl[x.cl]||0)+1);const topCl=Object.entries(byCl).sort((a,b)=>b[1]-a[1])[0];
+    a=`Penjualan ${r.m.name}${ctx()} sebesar <b>${M(r.v)}</b> dari <b>${r.n} unit</b>${showT&&r.t?`, <b>${pc(r.v/r.t)} dari target</b> (${r.v>=r.t?"surplus":"kurang"} ${M(Math.abs(r.v-r.t))})`:""}. ${prev?`Dibanding ${prev.m.name}, penjualan <b>${r.v>=prev.v?"naik":"turun"} ${pc(prev.v?Math.abs(r.v/prev.v-1):0,1)}</b>. `:""}${topCl&&!S.cl?`Cluster paling laku bulan ini <b>${topCl[0]}</b> (${topCl[1]} unit). `:""}${cancels.length?`Tercatat <b>${cancels.length} pembatalan</b> dari booking bulan ini.`:"Tidak ada pembatalan dari booking bulan ini."}`}
+  else{const tot=sum(rows,r=>r.v),n=sum(rows,r=>r.n),tt=sum(rows,r=>r.t),best=rows.reduce((a,b)=>b.v>a.v?b:a),hit=rows.filter(r=>r.t&&r.v>=r.t).length,h=Math.floor(rows.length/2),h1=sum(rows.slice(0,h),r=>r.v)/h,h2=sum(rows.slice(-h),r=>r.v)/h;
+    a=`Marketing sales ${perLabel()}${ctx()} mencapai <b>${M(tot)}</b> dari <b>${n} unit</b>${showT&&tt?`, atau <b>${pc(tot/tt,1)}</b> dari target (${M(tt,1)}). Target bulanan hanya tercapai di <b>${hit} dari ${rows.length} bulan</b>`:""}. Penjualan tertinggi di <b>${best.m.name} (${M(best.v)})</b>, dan rata-rata ${h} bulan terakhir <b>${h2>=h1?"naik":"turun"} ${pc(h1?Math.abs(h2/h1-1):0)}</b> dibanding ${h} bulan pertama. ${cancels.length?`Ada <b>${cancels.length} pembatalan</b> senilai ${M(sum(cancels,x=>x.harga))} yang perlu dievaluasi penyebabnya.`:""}`}
+  $("a-sales").innerHTML=a;
+}
+
+// ================= Mix =================
+function renderMix(){
+  const H=250,[s,W]=svgIn("mix",H,"Komposisi cara bayar dan penyerapan cluster",420),cols=[V("--c4"),V("--c3"),V("--c1")];
+  const base=netSales({cb:1}).filter(x=>inP(x.tb)),tot=sum(base,x=>x.harga),cnt=base.length;
+  const cbs=CBS.map((k,i)=>{const r=base.filter(x=>x.cb===k);return{k,i,v:sum(r,x=>x.harga),n:r.length}});
+  const cx=76,cy=78,r=64,rw=20;let a0=-Math.PI/2;
+  if(!tot)el("circle",{cx,cy,r:r-rw/2,fill:"none",stroke:V("--track"),"stroke-width":rw},s);
+  cbs.forEach(q=>{if(!q.v)return;const a1=a0+q.v/tot*2*Math.PI-.03,lg=a1-a0>Math.PI?1:0,Pt=(a,rr)=>[cx+rr*Math.cos(a),cy+rr*Math.sin(a)];
+    const[x0,y0]=Pt(a0,r),[x1,y1]=Pt(a1,r),[x2,y2]=Pt(a1,r-rw),[x3,y3]=Pt(a0,r-rw),on=S.cb===q.k;
+    const g=el("g",{opacity:S.cb&&!on?.3:1,class:"fade"},s);el("path",{d:`M${x0},${y0}A${r},${r} 0 ${lg} 1 ${x1},${y1}L${x2},${y2}A${r-rw},${r-rw} 0 ${lg} 0 ${x3},${y3}Z`,fill:cols[q.i]},g);
+    act(g,`${q.k}<b>${M(q.v)}</b>${q.n} unit · ${pc(q.v/tot)}<br>Klik untuk ${on?"hapus filter":"filter cara bayar ini"}`,()=>{S.cb=on?null:q.k;render()},`${q.k}: ${pc(q.v/tot)}`);a0=a1+.03});
+  const shown=S.cb?cbs.find(q=>q.k===S.cb).n:cnt;
+  tx(s,cx,cy+3,String(shown),{"text-anchor":"middle",fill:V("--text"),"font-size":19,"font-weight":800});tx(s,cx,cy+18,"unit",{"text-anchor":"middle",fill:V("--muted")});
+  cbs.forEach(q=>{const yy=36+q.i*28,on=S.cb===q.k,g=el("g",{opacity:S.cb&&!on?.4:1},s);el("rect",{x:162,y:yy-9,width:10,height:10,rx:3,fill:cols[q.i]},g);
+    tx(g,179,yy,q.k,{fill:V("--text"),"font-size":12,"font-weight":on?700:500});tx(g,W-2,yy,`${q.n} unit · ${pc(tot?q.v/tot:0)}`,{"text-anchor":"end",fill:V("--text"),"font-size":12,"font-weight":700});
+    act(g,`${q.k}<b>${M(q.v)}</b>Klik untuk filter`,()=>{S.cb=S.cb===q.k?null:q.k;render()},q.k)});
+  tx(s,0,176,"UNIT TERJUAL PER CLUSTER"+(S.m?" · "+P().n3.toUpperCase():" · KUMULATIF"),{fill:V("--muted"),"font-size":10,"font-weight":700,"letter-spacing":.6});
+  const cls=[...new Set(UN.map(u=>u.cl))],sold=netSales({cl:1}).filter(x=>S.m?inP(x.tb):x.tb<=asof());
+  cls.forEach((c,i)=>{const yy=188+i*20,L=64,w=W-L-92,n=sold.filter(x=>x.cl===c).length,t=UN.filter(u=>u.cl===c).length,on=S.cl===c;
+    const g=el("g",{opacity:S.cl&&!on?.35:1,class:"fade"},s);el("rect",{x:0,y:yy-4,width:W,height:20,fill:"transparent"},g);
+    tx(g,L-8,yy+9,c,{"text-anchor":"end",fill:V("--text"),"font-size":11.5,"font-weight":on?700:500});
+    el("rect",{x:L,y:yy,width:w,height:11,rx:3,fill:V("--track")},g);el("rect",{x:L,y:yy,width:w*n/t,height:11,rx:3,fill:V("--c4"),"fill-opacity":.85},g);
+    tx(g,W-2,yy+9,`${n}/${t} · ${pc(n/t)}`,{"text-anchor":"end",fill:V("--text"),"font-size":11.5,"font-weight":700});
+    act(g,`Cluster ${c}<b>${n} dari ${t} unit</b>Klik untuk ${on?"hapus filter":"filter cluster ini"}`,()=>{S.cl=on?null:c;S.unit=null;render()},`Cluster ${c}`)});
+  const lead=[...cbs].sort((a,b)=>b.v-a.v)[0],clRows=cls.map(c=>({c,n:sold.filter(x=>x.cl===c).length,t:UN.filter(u=>u.cl===c).length})).sort((a,b)=>b.n/b.t-a.n/a.t);
+  let a;if(!cnt)a=`Tidak ada penjualan pada ${perLabel()}${ctx()}.`;
+  else{a=`${S.cb?`Cara bayar <b>${S.cb}</b> menyumbang <b>${pc(cbs.find(q=>q.k===S.cb).v/tot)}</b> nilai penjualan ${perLabel()}.`:`<b>${lead.k}</b> mendominasi dengan <b>${lead.n} unit (${pc(lead.v/tot)} nilai)</b> pada ${perLabel()}${lead.k==="KPR"?", sehingga arus kas sangat bergantung pada kecepatan pencairan bank":""}.`} `;
+    if(S.cl){const me=clRows.find(r=>r.c===S.cl);a+=`Cluster <b>${S.cl}</b> ${S.m?"terjual":"sudah terjual"} <b>${me.n} dari ${me.t} unit</b>${S.cb?" melalui "+S.cb:""}${S.m?" pada bulan ini":` (${pc(me.n/me.t)})`}.`}
+    else if(S.m||S.cb){const top=[...clRows].sort((x,y)=>y.n-x.n)[0];a+=`${S.cb?`Melalui ${S.cb}, c`:"C"}luster <b>${top.c}</b> terjual paling banyak (${top.n} unit)${S.m?" bulan ini":""}.`}
+    else a+=`Cluster <b>${clRows[0].c}</b> paling cepat terserap (${clRows[0].n} dari ${clRows[0].t} unit), sedangkan <b>${clRows[clRows.length-1].c}</b> baru <b>${pc(clRows[clRows.length-1].n/clRows[clRows.length-1].t)}</b>.`}
+  $("a-mix").innerHTML=a;
+}
+
+// ================= Cash =================
+function renderCash(){
+  const H=310,[s,W]=svgIn("cash",H,"Arus kas masuk dan keluar per bulan",480),L=46,R=10,T=16,bot=200;
+  const rows=MON.map((m,i)=>{const c=CA.filter(x=>x.t>=m.s&&x.t<=m.e);return{i,m,k:sum(c.filter(x=>x.arah==="Masuk"&&x.kat!=="Kredit Konstruksi"),x=>x.nom),kr:sum(c.filter(x=>x.kat==="Kredit Konstruksi"),x=>x.nom),o:sum(c.filter(x=>x.arah!=="Masuk"),x=>x.nom),s:saldoAt(m.e)}});
+  const mx=Math.max(...rows.map(r=>Math.max(r.k+r.kr,r.o)),1),step=[1e9,2e9,4e9,5e9,1e10].find(v=>mx/v<=4)||2e10,max=Math.ceil(mx*1.1/step)*step;
+  const y=v=>T+(1-v/max)*(bot-T),bw=(W-L-R)/rows.length;
+  for(let v=0;v<=max+1;v+=step){el("line",{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:V("--grid")},s);tx(s,L-8,y(v)+4,nf(v/1e9,0)+" M",{"text-anchor":"end",fill:V("--muted")})}
+  rows.forEach(r=>{const x=L+r.i*bw+bw*.14,w=bw*.34,sel=S.m===r.i+1,g=el("g",{opacity:S.m&&!sel?.35:1,class:"fade"},s);
+    el("rect",{x:L+r.i*bw,y:T,width:bw,height:bot-T+20,fill:"transparent"},g);
+    el("rect",{x,y:y(r.k),width:w,height:y(0)-y(r.k),fill:V("--c2")},g);
+    if(r.kr){el("rect",{x,y:y(r.k+r.kr),width:w,height:Math.max(0,y(0)-y(r.kr)-2),fill:V("--c2l")},g);tx(g,x+w/2,y(r.k+r.kr)-5,"+kredit",{"text-anchor":"middle","font-size":10})}
+    el("rect",{x:x+w+3,y:y(r.o),width:w,height:y(0)-y(r.o),fill:V("--c1")},g);
+    tx(g,x+w+1.5,bot+15,r.m.n3,{"text-anchor":"middle",fill:V("--text"),"font-weight":sel?800:500});
+    act(g,`${r.m.name} ${r.m.y}<b>Neto ${r.k+r.kr-r.o>=0?"+":"−"}${M(Math.abs(r.k+r.kr-r.o))}</b>Masuk konsumen ${M(r.k)}${r.kr?` · kredit ${M(r.kr)}`:""}<br>Keluar ${M(r.o)} · saldo akhir ${M(r.s)}<br>Klik untuk ${sel?"kembali":"filter bulan ini"}`,()=>{S.m=sel?0:r.i+1;S.unit=null;render()},`${r.m.name}`)});
+  const t2=248,b2=H-8,smx=Math.max(...rows.map(r=>r.s))*1.12,smn=Math.min(0,...rows.map(r=>r.s)),y2=v=>t2+(1-(v-smn)/(smx-smn))*(b2-t2);
+  tx(s,W-R,t2-16,"SALDO KAS AKHIR BULAN",{"text-anchor":"end",fill:V("--muted"),"font-size":10,"font-weight":700});
+  el("line",{x1:L,x2:W-R,y1:b2,y2:b2,stroke:V("--grid")},s);
+  const pts=rows.map(r=>[L+r.i*bw+bw*.5,y2(r.s)]),lowI=rows.reduce((a,b)=>b.s<a.s?b:a).i;
+  el("polyline",{points:pts.map(p=>p.join(",")).join(" "),fill:"none",stroke:V("--c3"),"stroke-width":2.4},s);
+  pts.forEach((p,i)=>{const sel=S.m===i+1;el("circle",{cx:p[0],cy:p[1],r:sel?6:i===lowI?5:3.5,fill:i===lowI?V("--bad"):V("--c3"),stroke:V("--surface"),"stroke-width":2},s);tx(s,p[0],p[1]-9,nf(rows[i].s/1e9,1),{"text-anchor":"middle",fill:V("--text"),"font-size":10,"font-weight":sel?800:700})});
+  let a;
+  if(S.m){const r=rows[S.m-1],c=CA.filter(x=>x.t>=r.m.s&&x.t<=r.m.e&&x.arah!=="Masuk"),byK={};c.forEach(x=>byK[x.kat]=(byK[x.kat]||0)+x.nom);const top=Object.entries(byK).sort((a,b)=>b[1]-a[1]),net=r.k+r.kr-r.o;
+    a=`Pada ${r.m.name}, kas masuk dari konsumen <b>${M(r.k)}</b>${r.kr?` ditambah kredit konstruksi <b>${M(r.kr)}</b>`:""}, sementara kas keluar <b>${M(r.o)}</b>. Arus kas bersih <b>${net>=0?"surplus":"defisit"} ${M(Math.abs(net))}</b>, dan saldo akhir bulan <b>${M(r.s)}</b>. Pengeluaran terbesar untuk <b>${top[0][0]}</b> (${M(top[0][1])}, ${pc(top[0][1]/r.o)} dari kas keluar).`}
+  else{const low=rows[lowI],c=CA.filter(x=>x.t>=low.m.s&&x.t<=low.m.e&&x.arah!=="Masuk"),byK={};c.forEach(x=>byK[x.kat]=(byK[x.kat]||0)+x.nom);const big=Object.entries(byK).sort((a,b)=>b[1]-a[1])[0];
+    const K=sum(rows,r=>r.k),KR=sum(rows,r=>r.kr),O=sum(rows,r=>r.o),con=sum(CA.filter(x=>x.kat==="Kontraktor"),x=>x.nom);
+    a=`Kas masuk dari konsumen <b>${M(K)}</b>${KR?`, ditambah kredit konstruksi <b>${M(KR)}</b>`:""}, dengan total kas keluar <b>${M(O)}</b>. Saldo terendah terjadi di <b>${low.m.name} (${M(low.s)})</b>, saat pengeluaran terbesar untuk ${big[0].toLowerCase()} (${M(big[1])}). ${K<con?`Kas dari penjualan baru menutup <b>${pc(K/con)}</b> biaya kontraktor, jadi proyek masih bergantung pada kredit bank dan penagihan piutang menjadi kunci.`:"Kas dari penjualan sudah cukup menutup biaya kontraktor."}`}
+  $("a-cash").innerHTML=a;
+}
+
+// ================= Aging =================
+function renderAging(){
+  const od=overdue(),a=asof(),B=[["1–30 hari",0,30,"--a1"],["31–60 hari",30,60,"--a2"],["61–90 hari",60,90,"--a3"],[">90 hari",90,1e9,"--a4"]].map(([l,lo,hi,c])=>{const r=od.filter(t=>t.hari>lo&&t.hari<=hi);return{l,c,v:sum(r,t=>t.nom),n:r.length}});
+  $("s-aging").textContent="posisi "+dstr(a)+ctx();
+  const H=118,[s,W]=svgIn("aging",H,"Aging piutang",400),L=76,R=134,max=Math.max(...B.map(b=>b.v),1);
+  B.forEach((b,i)=>{const yy=4+i*28,w=(W-L-R)*b.v/max;tx(s,L-8,yy+12,b.l,{"text-anchor":"end",fill:V("--text"),"font-size":11.5});
+    el("rect",{x:L,y:yy,width:W-L-R,height:16,rx:4,fill:V("--track")},s);if(b.v)el("rect",{x:L,y:yy,width:Math.max(3,w),height:16,rx:4,fill:V(b.c)},s);
+    tx(s,W-2,yy+12,`${M(b.v)} · ${b.n} tgh`,{"text-anchor":"end",fill:V("--text"),"font-size":11.5,"font-weight":700})});
+  const grp=new Map();od.forEach(t=>{const k=t.sid;const g=grp.get(k)||{kon:t.kon,unit:t.unit,v:0,h:0,j:[]};g.v+=t.nom;g.h=Math.max(g.h,t.hari);g.j.push(t.jenis);grp.set(k,g)});
+  const top=[...grp.values()].sort((a,b)=>b.v-a.v).slice(0,5);
+  $("top").innerHTML=top.length?top.map(t=>`<tr data-u="${t.unit}" class="${S.unit===t.unit?"sel":""}" tabindex="0"><td>${t.kon}</td><td>${t.unit}</td><td>${t.j.length>1?t.j.length+" tagihan":t.j[0].replace(/\/\d+$/,"")}</td><td class="r"><b>${JT(t.v)}</b></td><td class="r"><span class="pill ${t.h<=30?"w":""}">${t.h} hari</span></td></tr>`).join(""):`<tr><td colspan="5" style="color:var(--muted);padding:10px 4px">Tidak ada tagihan yang terlambat.</td></tr>`;
+  $("top").querySelectorAll("tr[data-u]").forEach(tr=>{const go=()=>{S.unit=S.unit===tr.dataset.u?null:tr.dataset.u;render();document.getElementById("denah").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth",block:"center"})};tr.addEventListener("click",go);tr.addEventListener("keydown",e=>{if(e.key==="Enter")go()})});
+  const tot=sum(od,t=>t.nom),kpr=od.filter(t=>t.jenis==="Pencairan KPR"),kprPaid=new Set(TG.filter(t=>t.jenis==="Pencairan KPR"&&t.paid!==null&&t.paid<=a).map(t=>t.sid)),ret=TG.filter(t=>t.jenis==="Retensi KPR"&&kprPaid.has(t.sid)&&(t.paid===null||t.paid>a)&&fil(t)&&activeSale(t.sid,a));
+  const lm=S.m?P():MON[MON.length-1],dueL=TG.filter(t=>t.due>=lm.s&&t.due<=lm.e&&fil(t)&&activeSale(t.sid,lm.e)),collL=sum(dueL,t=>t.nom)?sum(dueL,t=>t.paid!==null&&t.paid<=lm.e?t.amt:0)/sum(dueL,t=>t.nom):0;
+  let txt;if(!od.length)txt=`Per ${dstr(a)} tidak ada tagihan jatuh tempo yang belum terbayar${ctx()}.`;
+  else{txt=`Piutang jatuh tempo per ${dstr(a)} sebesar <b>${M(tot)}</b> dari ${od.length} tagihan${ctx()}. `;
+    txt+=kpr.length?`Sekitar <b>${pc(sum(kpr,t=>t.nom)/tot)}</b> berasal dari <b>${kpr.length} pencairan KPR</b> yang tertunda di bank, bukan dari konsumen yang menunggak. `:`Seluruhnya berasal dari cicilan atau DP konsumen, sehingga perlu penagihan langsung. `;
+    const g90=sum(od.filter(t=>t.hari>90),t=>t.nom);if(g90)txt+=`Piutang di atas 90 hari <b>${M(g90)}</b> berisiko macet. `;
+    txt+=`Collection rate ${lm.name} <b>${pc(collL)}</b>.`}
+  if(ret.length)txt+=` Masih ada <b>dana retensi KPR ${M(sum(ret,t=>t.nom))}</b> yang ditahan bank sampai serah terima.`;
+  $("a-aging").innerHTML=txt;
+}
+
+// ================= Budget =================
+function budgetRows(){const a=asof();return PROYEK.map(p=>{const b=BI.filter(x=>x.p===p),rab=sum(b,x=>x.rab),prog=rab?sum(b,x=>x.prog*x.rab)/rab:0;
+  const real=sum(CA.filter(c=>c.kat==="Kontraktor"&&c.proyek===p&&c.t<=a),c=>c.nom);return{p,rab,real,prog,serap:rab?real/rab:0}})}
+function renderBudget(){
+  const rows=budgetRows(),showP=asof()>=STAT_DAY,a=asof();
+  $("s-budget").textContent=`posisi ${dstr(a)}`;
+  const H=rows.length*56+8,[s,W]=svgIn("budget",H,"Budget vs realisasi biaya proyek",520),L=Math.min(178,W*.34),R=8,max=Math.max(...rows.map(b=>b.rab),1);
+  rows.forEach((b,i)=>{const yy=10+i*56,w=W-L-R-92,rw=w*b.rab/max,flag=showP&&b.serap-b.prog>.05,isCl=UN.some(u=>u.cl===b.p),on=S.cl===b.p;
+    const g=el("g",{opacity:S.cl&&!on?.35:1,class:"fade"},s);el("rect",{x:0,y:yy-6,width:W,height:52,fill:"transparent"},g);
+    tx(g,0,yy+12,b.p,{fill:V("--text"),"font-size":12.5,"font-weight":700});tx(g,0,yy+28,"RAB "+M(b.rab,1),{fill:V("--muted")});
+    el("rect",{x:L,y:yy,width:rw,height:22,rx:5,fill:V("--track"),stroke:V("--line")},g);
+    el("rect",{x:L,y:yy,width:Math.min(rw,rw*b.serap),height:22,rx:5,fill:flag?V("--c1"):V("--c2")},g);
+    if(showP){const px=L+rw*b.prog;el("line",{x1:px,x2:px,y1:yy-4,y2:yy+26,stroke:V("--c4"),"stroke-width":3},g)}
+    tx(g,L,yy+40,`Biaya ${pc(b.serap)} (${M(b.real,1)})`+(showP?` · Progress fisik ${pc(b.prog)}`:""),{fill:flag?V("--bad"):V("--text-2"),"font-weight":flag?700:500});
+    if(flag)tx(g,L+rw+8,yy+15,"⚠ cost overrun",{fill:V("--bad"),"font-weight":800});
+    const html=`${b.p}<b>${pc(b.serap)} terserap</b>${M(b.real)} dari RAB ${M(b.rab)}${showP?`<br>Progress fisik ${pc(b.prog)}`:""}${isCl?`<br>Klik untuk ${on?"hapus filter":"filter cluster ini"}`:""}`;
+    if(isCl)act(g,html,()=>{S.cl=on?null:b.p;S.unit=null;render()},b.p);else{g.addEventListener("mousemove",e=>showTip(e,html));g.addEventListener("mouseleave",hideTip)}});
+  const rab=sum(rows,b=>b.rab),real=sum(rows,b=>b.real),prog=rab?sum(rows,b=>b.prog*b.rab)/rab:0,over=rows.filter(b=>b.serap-b.prog>.05).sort((x,y)=>(y.serap-y.prog)-(x.serap-x.prog)),ok=rows.filter(b=>!over.includes(b));
+  let t;
+  if(S.cl){const b=rows.find(r=>r.p===S.cl);t=`Cluster <b>${S.cl}</b> telah menyerap <b>${M(b.real)}</b> atau <b>${pc(b.serap)}</b> dari RAB ${M(b.rab,1)} per ${dstr(a)}.`+(showP?` Progress fisik <b>${pc(b.prog)}</b>, ${b.serap-b.prog>.05?`tertinggal <b>${nf((b.serap-b.prog)*100,0)} poin</b> dari biaya, indikasi <b>cost overrun</b>. Sisa RAB ${M(b.rab-b.real)} perlu dikawal ketat.`:"sejalan dengan biaya yang terserap."}`:"")}
+  else{t=`Total biaya terserap <b>${M(real)}</b> atau <b>${pc(real/rab)}</b> dari RAB ${M(rab,1)} per ${dstr(a)}.`;
+    if(showP){t+=` Progress fisik rata-rata <b>${pc(prog)}</b>. `;t+=over.length?`${over.map(b=>`<b>${b.p}</b> (biaya ${pc(b.serap)} vs progress ${pc(b.prog)})`).join(" dan ")} perlu perhatian karena terindikasi <b>cost overrun</b>. `:"Semua proyek berjalan sejalan antara biaya dan progress. ";if(over.length&&ok.length)t+=`${ok.map(b=>b.p).join(", ")} relatif seimbang.`}}
+  if(!showP)t+=` Progress fisik hanya tercatat per ${dstr(STAT_DAY)}, jadi penanda progress ditampilkan saat melihat posisi akhir.`;
+  $("a-budget").innerHTML=t;
+}
+
+// ================= Kurva S =================
+function renderKS(){
+  const H=236,[s,W]=svgIn("ks",H,"Kurva-S rencana vs realisasi biaya",380),L=34,R=44,T=14,B=24,d=KS;if(!d.length)return;
+  const mx=Math.max(...d.map(r=>Math.max(r.plan,r.real))),step=[5e9,1e10,2e10,5e10].find(v=>mx/v<=4)||1e11,max=Math.ceil(mx*1.05/step)*step;
+  const x=i=>L+i*(W-L-R)/Math.max(1,d.length-1),y=v=>T+(1-v/max)*(H-T-B);
+  for(let v=0;v<=max+1;v+=step){el("line",{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:V("--grid")},s);tx(s,L-6,y(v)+4,nf(v/1e9,0),{"text-anchor":"end",fill:V("--muted")})}
+  const lab=b=>{const m=MON.find(q=>q.key===b);return m?m.n3:b};
+  d.forEach((r,i)=>tx(s,x(i),H-6,lab(r.b),{"text-anchor":"middle",fill:V("--muted")}));
+  const area=`M${x(0)},${y(d[0].plan)} `+d.map((r,i)=>`L${x(i)},${y(r.real)}`).join(" ")+" "+[...d].reverse().map((r,j)=>`L${x(d.length-1-j)},${y(r.plan)}`).join(" ")+"Z";
+  el("path",{d:area,fill:V("--c1"),"fill-opacity":.12},s);
+  el("polyline",{points:d.map((r,i)=>x(i)+","+y(r.plan)).join(" "),fill:"none",stroke:V("--muted"),"stroke-width":2,"stroke-dasharray":"5 4"},s);
+  el("polyline",{points:d.map((r,i)=>x(i)+","+y(r.real)).join(" "),fill:"none",stroke:V("--c1"),"stroke-width":2.6},s);
+  const selI=S.m?d.findIndex(r=>r.b===P().key):d.length-1;
+  d.forEach((r,i)=>{const g=el("g",{},s);el("rect",{x:x(i)-(W-L-R)/d.length/2,y:T,width:(W-L-R)/d.length,height:H-T-B,fill:"transparent"},g);
+    const dot=el("circle",{cx:x(i),cy:y(r.real),r:i===selI?6:3,fill:V("--c1"),stroke:V("--surface"),"stroke-width":2,opacity:i===selI?1:0},g);
+    g.addEventListener("mouseenter",()=>dot.setAttribute("opacity",1));g.addEventListener("mouseleave",()=>dot.setAttribute("opacity",i===selI?1:0));
+    const mi=MON.findIndex(m=>m.key===r.b);act(g,`${lab(r.b)}<b>Realisasi ${M(r.real,1)}</b>Rencana ${M(r.plan,1)} · selisih ${r.real>=r.plan?"+":"−"}${M(Math.abs(r.real-r.plan))}`,()=>{if(mi>=0){S.m=S.m===mi+1?0:mi+1;S.unit=null;render()}},`Kurva S ${lab(r.b)}`)});
+  if(selI>=0){const r=d[selI];el("line",{x1:x(selI),x2:x(selI),y1:y(r.plan),y2:y(r.real),stroke:V("--c1"),"stroke-width":1,"stroke-dasharray":"2 2"},s);
+    tx(s,x(selI)+7,y(r.real)-4,nf(r.real/1e9,1),{fill:V("--c1"),"font-weight":800});tx(s,x(selI)+7,y(r.plan)+13,nf(r.plan/1e9,1),{fill:V("--muted"),"font-weight":700})}
+  const r=d[selI<0?d.length-1:selI],dev=r.plan?r.real/r.plan-1:0,above=d.slice(0,selI+1).filter(q=>q.real>q.plan).length;
+  $("a-ks").innerHTML=`Per ${lab(r.b)}, realisasi biaya kumulatif <b>${M(r.real)}</b>, <b>${pc(Math.abs(dev),1)} ${dev>=0?"di atas":"di bawah"}</b> rencana kurva-S (${M(r.plan)}), selisih <b>${M(Math.abs(r.real-r.plan))}</b>. ${above===selI+1?"Realisasi selalu berada di atas rencana sejak awal periode.":`Realisasi berada di atas rencana pada ${above} dari ${selI+1} bulan.`} ${dev>0?"Tanpa kenaikan progress fisik yang sepadan, selisih ini akan menekan margin proyek.":"Penyerapan yang lebih lambat dari rencana perlu dicek apakah karena keterlambatan pekerjaan."}${S.cl?" Kurva-S dihitung untuk seluruh proyek.":""}`;
+}
+
+// ================= Denah =================
+const SCOL={"Tersedia":"--s-av","Booking":"--s-bk","Terjual":"--s-sold","Serah Terima":"--s-ho"};
+function renderDenah(){
+  const a=asof(),stat=unitStatus(a),od=overdue({cl:1,cb:1}),odU=new Set(od.filter(t=>t.hari>30).map(t=>t.unit));
+  const cls=[...new Set(UN.map(u=>u.cl))],cs=17,g=3,W=900;
+  const blocks=cls.map(c=>{const bl=[...new Set(UN.filter(u=>u.cl===c).map(u=>u.blok))];const mx=Math.max(...bl.map(b=>UN.filter(u=>u.blok===b).length));return{c,bl,w:46+mx*(cs+g),h:20+bl.length*(cs+g+6)}});
+  const rows=[];const where=[];blocks.forEach((b,i)=>{let r=rows.find(r=>r.x+b.w<=W);if(!r){r={x:0,h:0,items:[]};rows.push(r)}where[i]=[rows.indexOf(r),r.x];r.x+=b.w+30;r.h=Math.max(r.h,b.h)});
+  let yy0=0;rows.forEach(r=>{r.y=yy0;yy0+=r.h+14});const pos=where.map(([ri,x])=>[x,rows[ri].y]),Htot=yy0-10;
+  const fr=rows.reduce((a,r)=>W-r.x>W-a.x?r:a,rows[0]),x=fr.x,free=W-x;
+  const box=$("denah");box.innerHTML="";const s=el("svg",{viewBox:`0 0 ${W} ${Htot}`,width:W,height:Htot,role:"img","aria-label":"Denah status unit"},box);s.style.width=W+"px";s.style.maxWidth="none";
+  blocks.forEach((b,bi)=>{const[ox,oy]=pos[bi],dimC=S.cl&&S.cl!==b.c;
+    tx(s,ox,oy+11,"CLUSTER "+b.c.toUpperCase(),{fill:V("--muted"),"font-size":10,"font-weight":800,"letter-spacing":.8});
+    b.bl.forEach((bk,bi2)=>{const ry=oy+20+bi2*(cs+g+6);tx(s,ox,ry+12,"Blok "+bk,{fill:V("--text-2"),"font-size":11,"font-weight":600});
+      UN.filter(u=>u.blok===bk).sort((p,q)=>p.no-q.no).forEach((u,k)=>{const st=stat.get(u.id),status=st?st.st:"Tersedia",cx=ox+46+k*(cs+g),sel=S.unit===u.id;
+        const dim=dimC||(S.cb&&(!st||st.s.cb!==S.cb));const gg=el("g",{opacity:dim?.25:1,class:"fade"},s);
+        el("rect",{x:cx,y:ry,width:cs,height:cs,rx:3.5,fill:V(SCOL[status]),stroke:sel?V("--text"):status==="Tersedia"?V("--s-av-line"):"none","stroke-width":sel?2.2:1},gg);
+        if(odU.has(u.id))el("circle",{cx:cx+cs-2,cy:ry+2,r:4,fill:V("--bad"),stroke:V("--surface"),"stroke-width":1.5},gg);
+        act(gg,`Unit ${u.id} · ${u.tipe}<b>${status}</b>${st?st.s.kon+" · "+st.s.cb:"Harga "+M(u.harga)}${odU.has(u.id)?"<br>Ada tagihan telat &gt; 30 hari":""}`,()=>{S.unit=sel?null:u.id;renderDenah();renderAging()},`Unit ${u.id} ${status}`)})})});
+  if(free>=220){const fy=fr.y,bx=x;el("rect",{x:bx,y:fy+8,width:W-bx-4,height:Math.max(40,Math.min(78,fr.h-10)),rx:10,fill:V("--surface-2"),stroke:V("--line"),"stroke-dasharray":"4 4"},s);
+    tx(s,bx+(W-bx)/2,fy+44,"Clubhouse · Taman · Kolam",{"text-anchor":"middle",fill:V("--muted"),"font-size":11.5,"font-weight":600});tx(s,bx+(W-bx)/2,fy+62,"fasilitas umum",{"text-anchor":"middle",fill:V("--muted"),"font-size":10.5})}
+  // legend
+  const units=UN.filter(u=>(!S.cl||u.cl===S.cl)),cnt={};units.forEach(u=>{const st=stat.get(u.id);if(S.cb&&(!st||st.s.cb!==S.cb))return;const k=st?st.st:"Tersedia";cnt[k]=(cnt[k]||0)+1});
+  const odCnt=units.filter(u=>odU.has(u.id)&&(!S.cb||(stat.get(u.id)||{s:{}}).s.cb===S.cb)).length;
+  $("dleg").innerHTML=Object.keys(SCOL).map(k=>`<span><i style="background:var(${SCOL[k]});${k==="Tersedia"?"border:1px solid var(--s-av-line)":""}"></i>${k}<b>${cnt[k]||0} unit</b></span>`).join("")+`<span><i style="background:var(--bad);border-radius:50%"></i>Tagihan telat &gt; 30 hari<b>${odCnt} unit</b></span>`;
+  $("s-den").textContent=`status per ${dstr(a)} · klik unit untuk detail`;
+  // detail
+  if(S.unit){const u=UN.find(q=>q.id===S.unit),st=stat.get(S.unit),status=st?st.st:"Tersedia";let h=`<div class="detail"><h3>Unit ${u.id}<span class="chip" style="background:var(${SCOL[status]});${status==="Tersedia"?"color:var(--text)":""}">${status}</span></h3>`;
+    h+=`<div class="row">Cluster · Tipe<b>${u.cl} · ${u.tipe}</b></div><div class="row">Harga<b>${M(u.harga)}</b></div>`;
+    if(st){const tg=TG.filter(t=>t.sid===st.s.sid),paid=sum(tg.filter(t=>t.paid!==null&&t.paid<=a),t=>t.amt),o=od.filter(t=>t.sid===st.s.sid);
+      h+=`<div class="row">Konsumen<b>${st.s.kon}</b></div><div class="row">Cara bayar<b>${st.s.cb}${st.s.bank?" · "+st.s.bank:""}</b></div><div class="row">Tanggal booking<b>${dstr(st.s.tb)}</b></div>`;
+      h+=`<div class="row">Terbayar<b>${M(paid)} (${pc(paid/u.harga)})</b></div><div class="row">Sisa<b>${M(u.harga-paid)}</b></div>`;
+      h+=o.length?`<div class="row" style="color:var(--bad)">Tunggakan<b style="color:var(--bad)">${M(sum(o,t=>t.nom))}</b></div>`+o.map(t=>`<div class="row" style="font-size:11.5px">· ${t.jenis}<b>${JT(t.nom)} · ${t.hari} hari</b></div>`).join(""):`<div class="row">Tunggakan<b>Tidak ada</b></div>`}
+    else h+=`<div class="row">Konsumen<b>Belum terjual</b></div>`;
+    $("detail").innerHTML=h+`<button id="close">Tutup detail</button></div>`;$("close").onclick=()=>{S.unit=null;renderDenah();renderAging()}}
+  else $("detail").innerHTML="";
+  // analysis
+  const av=cnt["Tersedia"]||0,tot=Object.values(cnt).reduce((a,b)=>a+b,0),perCl=cls.map(c=>{const us=UN.filter(u=>u.cl===c);return{c,t:us.length,av:us.filter(u=>!stat.has(u.id)).length}}).sort((p,q)=>q.av/q.t-p.av/p.t);
+  let t=S.cb?`Per ${dstr(a)}, ada <b>${tot} unit</b> dengan cara bayar ${S.cb}${S.cl?" di Cluster "+S.cl:""}: ${cnt["Booking"]||0} booking, ${cnt["Terjual"]||0} terjual, dan <b>${cnt["Serah Terima"]||0} sudah serah terima</b>. `:`Per ${dstr(a)}, dari <b>${tot} unit</b>${ctx()}, <b>${av} unit masih tersedia</b>, ${cnt["Booking"]||0} booking, ${cnt["Terjual"]||0} terjual, dan <b>${cnt["Serah Terima"]||0} sudah serah terima</b>. `;
+  if(!S.cl&&!S.cb)t+=`Cluster <b>${perCl[0].c}</b> masih menyisakan <b>${perCl[0].av} dari ${perCl[0].t} unit</b>, proporsi stok tertinggi. `;
+  t+=odCnt?`Titik merah menandai <b>${odCnt} unit</b> dengan tagihan terlambat lebih dari 30 hari, sebagai prioritas tim collection.`:"Tidak ada unit dengan tagihan terlambat lebih dari 30 hari.";
+  $("a-den").innerHTML=t;
+}
+
+// ================= controls =================
+function renderControls(){
+  $("months").innerHTML=`<button data-m="0" aria-pressed="${S.m===0}">Semua</button>`+MON.map((m,i)=>`<button data-m="${i+1}" aria-pressed="${S.m===i+1}">${m.n3}</button>`).join("");
+  const cls=[...new Set(UN.map(u=>u.cl))];
+  $("f-cl").innerHTML=`<option value="">Semua</option>`+cls.map(c=>`<option ${S.cl===c?"selected":""}>${c}</option>`).join("");
+  $("f-cb").innerHTML=`<option value="">Semua</option>`+CBS.map(c=>`<option ${S.cb===c?"selected":""}>${c}</option>`).join("");
+  $("w-cl").classList.toggle("on",!!S.cl);$("w-cb").classList.toggle("on",!!S.cb);
+  document.querySelectorAll(".per").forEach(e=>e.textContent=perLabel()+ctx());
+}
+function render(){SB=saleBy();renderControls();renderKPI();renderSales();renderMix();renderCash();renderAging();renderBudget();renderKS();renderDenah()}
+$("months").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.m=+b.dataset.m;S.unit=null;render()});
+$("f-cl").addEventListener("change",e=>{S.cl=e.target.value||null;S.unit=null;render()});
+$("f-cb").addEventListener("change",e=>{S.cb=e.target.value||null;S.unit=null;render()});
+$("reset").addEventListener("click",()=>{Object.assign(S,{m:0,cl:null,cb:null,unit:null});render()});
+let rt;addEventListener("resize",()=>{if(!UN)return;clearTimeout(rt);rt=setTimeout(render,120)});
+function start(sheets,src){
+  try{build(sheets)}catch(e){fail(e.message);return}
+  const lm=MON[MON.length-1];$("sub").textContent=`Periode ${MON[0].name} – ${lm.name} ${lm.y} · Posisi per ${dstr(STAT_DAY)}`;
+  $("src").textContent=`Sumber: ${src} · ${UN.length} unit · ${SA.filter(s=>!s.batal).length} penjualan`;
+  render();if(document.fonts)document.fonts.ready.then(render);
+}
+function fail(msg){$("sub").textContent="Data belum bisa dimuat";$("kpis").innerHTML=`<div class="kpi" style="--k:var(--bad);grid-column:1/-1"><div class="t">Data tidak bisa dimuat</div><div class="d" style="margin-top:6px;font-size:13px;line-height:1.6">${msg}<br>Sheet yang dibutuhkan: unit, penjualan, tagihan, arus_kas, biaya_proyek, kurva_s (opsional: target).</div></div>`}
+(async()=>{
+  try{const r=await fetch("data.xlsx",{cache:"no-store"});if(!r.ok)throw new Error("File data.xlsx tidak ditemukan di folder yang sama dengan index.html.");
+    const wb=XLSX.read(await r.arrayBuffer(),{type:"array",cellDates:true}),sh={};
+    wb.SheetNames.forEach(n=>{sh[n.trim().toLowerCase().replace(/\s+/g,"_")]=XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:""}).map(o=>{const x={};for(const k in o)x[String(k).trim().toLowerCase().replace(/\s+/g,"_")]=o[k];return x})});
+    start(sh,"data.xlsx")}catch(e){fail(e.message)}})();
+</script>
+
+</body>
+</html>
